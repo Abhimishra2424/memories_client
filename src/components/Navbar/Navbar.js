@@ -29,6 +29,7 @@ const Navbar = () => {
   useEffect(() => {
     const token = user?.token;
 
+    // if token expired the user will be logged out logic
     if (token) {
       const decodedToken = decode(token);
 
