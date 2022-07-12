@@ -11,7 +11,7 @@ import {
 import ChipInput from "material-ui-chip-input";
 import { useDispatch } from "react-redux";
 import { useHistory, useLocation } from "react-router-dom";
-import { getPosts } from "../../actions/posts";
+import { getPosts, getPostsBySearch } from "../../actions/posts";
 import Posts from "../Posts/Posts";
 import Form from "../Form/Form";
 import Pagination from "../Pagination";
@@ -38,8 +38,9 @@ const Home = () => {
   }, [currentId, dispatch]);
 
   const searchPost = () => {
-    if (search.trim()) {
-      // dispatch same logic and fetch search posts
+    if (search.trim() || tags.length) {
+      dispatch(getPostsBySearch({ search, tags: tags.join(',') }));
+      history.push(`/posts/search?searchQuery=${search || 'none'}&tags=${tags.join(',')}`);
     } else {
       history.push("/");
     }
@@ -47,12 +48,13 @@ const Home = () => {
 
   const handleKeyPress = (e) => {
     if (e.keyCode === 13) {
-      //  search logic
       searchPost();
     }
   };
 
-  const handleAddChip = (tag) => setTags([...tags, tag]);
+  const handleAddChip = (tag) => {
+    setTags([...tags, tag]);
+  };
 
   const handleDeleteChip = (chipToDelete) =>
     setTags(tags.filter((tag) => tag !== chipToDelete));
@@ -72,40 +74,42 @@ const Home = () => {
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
             <AppBar
-              position="static"
               className={classes.appBarSearch}
+              position="static"
               color="inherit"
             >
               <TextField
+                onKeyDown={handleKeyPress}
                 name="search"
                 variant="outlined"
-                label="Search"
+                label="Search Memories"
                 fullWidth
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                onKeyPress={handleKeyPress}
               />
               <ChipInput
-                style={{ marginTop: "10px 0" }}
-                tags={tags}
-                onAdd={handleAddChip}
-                onDelete={handleDeleteChip}
-                label="Tags"
+                style={{ margin: "10px 0" }}
+                value={tags}
+                onAdd={(chip) => handleAddChip(chip)}
+                onDelete={(chip) => handleDeleteChip(chip)}
+                label="Search Tags"
                 variant="outlined"
               />
               <Button
                 onClick={searchPost}
                 className={classes.searchButton}
-                color="primary"
                 variant="contained"
+                color="primary"
               >
                 Search
               </Button>
             </AppBar>
             <Form currentId={currentId} setCurrentId={setCurrentId} />
-            <Paper elevation={6}>
-              <Pagination />
-            </Paper>
+            {!searchQuery && !tags.length && (
+              <Paper className={classes.pagination} elevation={6}>
+                <Pagination page={page} />
+              </Paper>
+            )}
           </Grid>
         </Grid>
       </Container>
