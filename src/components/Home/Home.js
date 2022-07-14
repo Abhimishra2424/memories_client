@@ -33,9 +33,7 @@ const Home = () => {
   const [search, setSearch] = useState("");
   const [tags, setTags] = useState([]);
 
-  useEffect(() => {
-    dispatch(getPosts());
-  }, [currentId, dispatch]);
+
 
   const searchPost = () => {
     if (search.trim() || tags.length) {

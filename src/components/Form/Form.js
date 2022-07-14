@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import useStyles from "./styles";
 import FileBase from "react-file-base64";
 
-import { createPost, updatePost } from "../../actions/posts";
+import { createPost, updatePost, getPosts } from "../../actions/posts";
 
 const Form = ({ setCurrentId, currentId }) => {
   const post = useSelector((state) =>
@@ -30,6 +30,7 @@ const Form = ({ setCurrentId, currentId }) => {
 
     if (currentId === 0) {
       dispatch(createPost({ ...postData, name: user?.result?.name }));
+      dispatch(getPosts());
       clear();
     } else {
       dispatch(
